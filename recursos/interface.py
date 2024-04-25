@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import filedialog
 
 # ===== PERGUNTA PATH DIRETORIO
 def pergunta_diretorio():

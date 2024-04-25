@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-# ===== RETORNA UM PONTEIRO AO BANCO REQUISITADO
+# ===== RETORNA UM PONTEIRO AO BANCO DE GENETICO
 def conecta_banco():
 
     try:
@@ -10,7 +10,7 @@ def conecta_banco():
 
         return 'Erro ao conectar com o banco!'
 
-    database = client['base-genetica-teste']
+    database = client['base-dados-brutos']
 
     return database
 

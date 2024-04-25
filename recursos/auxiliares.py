@@ -71,4 +71,60 @@ def calcula_frequencias(contabilizacao: dict):
         frequencia = contabilizacao['totalAlelos'][f'{alelo}'] / (contabilizacao['totalGenesLidos'] * 2)
         frequencias['frequenciaAlelo'][alelo] = round(frequencia * 100, 2)
 
-    return json.dumps(frequencias)
+    return frequencias
+
+# ===== FAZ O TRATAMENTO DE UMA CARACTERISTICA VINDA DO NORMSCORE (obs: quase num modelo inserivel para "banco-normscore")
+def trata_caracteristica_normscore(dadosCaracteristica):
+
+    formatado = {
+        '_id': dadosCaracteristica[0][0],
+        'snps': []
+    }
+
+    for dado in dadosCaracteristica:
+
+        temp = {
+            'snp': dado[2],
+            'gene': dado[4],
+            'efeitoXnormal': dado[3],
+            'beta': dado[6]
+        }
+        formatado['snps'].append(temp)
+
+    return formatado
+
+# ===== DADOS OS DICIONARIOS DO NORMSCORE E SNPS DE UMA PESSOA PARA UMA CARACTERISTICA, CALCULA O PRS
+def auxiliar_calcula_prs(normscore, pessoa):
+
+    resposta = {
+        'prs': 0,
+        'compatibilidade': None
+    }
+
+    # Calcula compatibilidade
+    somaBetasOk = 0
+    somaTodosBetas = 0
+    for snp in normscore['snps']:
+        somaTodosBetas += float(snp['beta'])
+        if pessoa[snp['snp']] != '':
+            somaBetasOk += float(snp['beta'])
+
+    compatibilidade = somaBetasOk/somaTodosBetas
+
+
+    # Calculando PRS
+    soma = 0
+    if compatibilidade >= 0.5:
+        for linha in normscore['snps']:
+            aleloEfeito = linha['efeitoXnormal'][0]
+            betaNormalizado = float(linha['beta'])/somaBetasOk
+            soma += betaNormalizado * pessoa[linha['snp']].count(aleloEfeito)
+
+        prs = round((soma/2)*100, 2)
+
+        resposta['prs'] = prs
+        resposta['compatibilidade'] = compatibilidade
+        return resposta
+
+    else:
+        print(f'Compatibilidade baixa: {round(compatibilidade, 2)}%. Para: {normscore['_id']} -> {pessoa}')
