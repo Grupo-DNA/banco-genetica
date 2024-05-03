@@ -98,7 +98,7 @@ def consulta_snps_caracteristica(client_id, snpsCaracteristica):
 
     for each in snpsCaracteristica:
         alelo = bdDados.consulta_snp(each['snp'], banco, client_id)
-        if len(alelo) == 1:
+        if len(alelo) >= 1:
             snpsPessoa[f'{each['snp']}'] = alelo[0]
 
         else:
@@ -144,6 +144,8 @@ def calcula_prs_caracteristica(caracteristica):
     for pessoa in bancoPessoas.list_collection_names():
         dicPessoa = consulta_snps_caracteristica(pessoa, dicNormscore['snps'])
 
+        print(dicNormscore)
+        print(pessoa)
         prsCaracteristica = auxiliar_calcula_prs(dicNormscore, dicPessoa)
         bancoPrs['caracteristicas-novo'].update_one({'_id': pessoa}, {'$set':{caracteristica: prsCaracteristica}}, upsert=True)
 

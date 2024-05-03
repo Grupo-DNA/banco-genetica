@@ -10,7 +10,7 @@ def conecta_banco():
 
         return 'Erro ao conectar com o banco!'
 
-    database = client['base-dados-brutos']
+    database = client['banco-snps']
 
     return database
 
